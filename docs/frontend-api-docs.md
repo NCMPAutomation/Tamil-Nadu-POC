@@ -4,7 +4,7 @@
 `https://dev.arche.global/api/v1/tndp`
 
 ## Response Envelope
-All APIs return this format:
+All APIs return this format. Response keys are in `camelCase`:
 
 ```json
 {
@@ -81,8 +81,8 @@ curl --location 'https://dev.arche.global/api/v1/tndp/case-types'
       "id": 1,
       "name": "GCR - MURDER FOR GAIN",
       "code": "GCR_MURDER_FOR_GAIN",
-      "is_active": true,
-      "created_at": "2026-04-29T10:00:00"
+      "isActive": true,
+      "createdAt": "2026-04-29T10:00:00"
     }
   ],
   "message": "Case types fetched"
@@ -105,17 +105,17 @@ curl --location 'https://dev.arche.global/api/v1/tndp/case-types/1/fields'
 {
   "success": true,
   "data": {
-    "case_type_id": 1,
-    "case_type_name": "GCR - MURDER FOR GAIN",
+    "caseTypeId": 1,
+    "caseTypeName": "GCR - MURDER FOR GAIN",
     "fields": [
       {
         "id": 101,
-        "field_name": "ps_cr_no_section_of_law",
+        "fieldName": "ps_cr_no_section_of_law",
         "label": "P.S, Cr. No. & Section Of Law",
         "type": "TEXT",
         "required": true,
         "options": null,
-        "order_index": 2
+        "orderIndex": 2
       }
     ]
   },
@@ -139,7 +139,7 @@ curl --location 'https://dev.arche.global/api/v1/tndp/forms/1'
 {
   "success": true,
   "data": {
-    "case_type": {
+    "caseType": {
       "id": 1,
       "name": "GCR - MURDER FOR GAIN",
       "code": "GCR_MURDER_FOR_GAIN"
@@ -147,21 +147,21 @@ curl --location 'https://dev.arche.global/api/v1/tndp/forms/1'
     "fields": [
       {
         "id": 100,
-        "field_name": "sl_no",
+        "fieldName": "sl_no",
         "label": "Sl. No",
-        "field_type": "NUMBER",
-        "is_required": true,
+        "fieldType": "NUMBER",
+        "isRequired": true,
         "options": null,
-        "order_index": 1
+        "orderIndex": 1
       },
       {
         "id": 101,
-        "field_name": "ps_cr_no_section_of_law",
+        "fieldName": "ps_cr_no_section_of_law",
         "label": "P.S, Cr. No. & Section Of Law",
-        "field_type": "TEXT",
-        "is_required": true,
+        "fieldType": "TEXT",
+        "isRequired": true,
         "options": null,
-        "order_index": 2
+        "orderIndex": 2
       }
     ]
   },
@@ -223,14 +223,14 @@ curl --location 'https://dev.arche.global/api/v1/tndp/cases' \
   "success": true,
   "data": {
     "id": 55,
-    "case_type_id": 1,
+    "caseTypeId": 1,
     "status": "DRAFT",
-    "created_by": "inspector_101",
-    "created_at": "2026-04-29T12:15:00",
+    "createdBy": "inspector_101",
+    "createdAt": "2026-04-29T12:15:00",
     "values": [
       {
-        "field_id": 100,
-        "field_name": "sl_no",
+        "fieldId": 100,
+        "fieldName": "sl_no",
         "label": "Sl. No",
         "value": "1"
       }
@@ -275,14 +275,14 @@ curl --location 'https://dev.arche.global/api/v1/tndp/cases/55'
   "success": true,
   "data": {
     "id": 55,
-    "case_type_id": 1,
+    "caseTypeId": 1,
     "status": "DRAFT",
-    "created_by": "inspector_101",
-    "created_at": "2026-04-29T12:15:00",
+    "createdBy": "inspector_101",
+    "createdAt": "2026-04-29T12:15:00",
     "values": [
       {
-        "field_id": 100,
-        "field_name": "sl_no",
+        "fieldId": 100,
+        "fieldName": "sl_no",
         "label": "Sl. No",
         "value": "1"
       }
@@ -313,15 +313,17 @@ curl --location 'https://dev.arche.global/api/v1/tndp/cases?case_type_id=1'
 ## Frontend Integration Flow
 1. Call `GET /case-types` and show case type dropdown.
 2. On case type select, call `GET /forms/{case_type_id}`.
-3. Render fields by `field_type` and `order_index`.
+3. Render fields by `fieldType` and `orderIndex`.
 4. For `DROPDOWN`, render options from `options`.
-5. Submit to `POST /cases` with `data` object keys exactly equal to `field_name`.
+5. Submit to `POST /cases` with `data` object keys exactly equal to `field_name` (from response `fieldName`).
 6. Use `GET /cases/{id}` for details page and `GET /cases` for list page.
 
 ---
 
 ## Notes for Frontend Team
 - `value` is stored and returned as string in API output.
+- Response payload keys are `camelCase`.
+- Request body and query parameter keys remain `snake_case` (for example: `case_type_id`, `created_by`).
 - Do not send unknown keys in `data`.
 - Required validation should be done in UI, but backend also enforces it.
-- `created_by` is currently a free text field (can be mapped to logged-in user later).
+- `created_by` is currently a free text field in request (can be mapped to logged-in user later).

@@ -8,7 +8,7 @@ from app.controllers.case_type_controller import router as case_type_router
 from app.controllers.form_controller import router as form_router
 from app.core.exceptions import BadRequestException, NotFoundException
 from app.core.logging import logger, setup_logging
-from app.core.response import error_response
+from app.core.response import error_response, success_response
 
 
 @asynccontextmanager
@@ -48,7 +48,7 @@ async def generic_exception_handler(_: Request, exc: Exception):
 
 @app.get("/health", tags=["Health"])
 async def health_check():
-    return {"success": True, "data": {"status": "ok"}, "message": "Healthy"}
+    return success_response(data={"status": "ok"}, message="Healthy")
 
 
 app.include_router(case_type_router)
