@@ -53,10 +53,10 @@ async def list_case_types(db: AsyncSession = Depends(get_db_session)):
     return success_response(data=[CaseTypeOut.model_validate(x).model_dump() for x in result], message="Case types fetched")
 
 
-@router.get("/{case_type_identifier}/fields", response_model=dict)
-async def get_case_type_fields(case_type_identifier: str, db: AsyncSession = Depends(get_db_session)):
+@router.get("/{case_type_id}/fields", response_model=dict)
+async def get_case_type_fields(case_type_id: int, db: AsyncSession = Depends(get_db_session)):
     service = FormService(CaseTypeRepository(db), FormFieldRepository(db))
-    form = await service.get_form_schema(case_type_identifier)
+    form = await service.get_form_schema(case_type_id)
     return success_response(
         data={
             "case_type": form["case_type"],
@@ -66,30 +66,30 @@ async def get_case_type_fields(case_type_identifier: str, db: AsyncSession = Dep
     )
 
 
-@router.get("/{case_type_identifier}/history", response_model=dict)
+@router.get("/{case_type_id}/history", response_model=dict)
 async def get_case_type_history(
-    case_type_identifier: str,
+    case_type_id: int,
     limit: int = Query(default=20, ge=1, le=100),
     db: AsyncSession = Depends(get_db_session),
 ):
     service = CaseEntryService(CaseEntryRepository(db), CaseTypeRepository(db), FormFieldRepository(db))
-    history = await service.get_category_history(case_type_identifier, limit=limit)
+    history = await service.get_category_history(case_type_id, limit=limit)
     response = CaseHistoryResponseOut(
         case_type=history["case_type"],
         summary=history["summary"],
         records=[_case_to_payload(case) for case in history["records"]],
-        form_endpoint=f"/forms/{case_type_identifier}",
-        submit_endpoint=f"/case-types/{case_type_identifier}/cases",
+        form_endpoint=f"/forms/{case_type_id}",
+        submit_endpoint=f"/case-types/{case_type_id}/cases",
     )
     return success_response(data=response.model_dump(), message="Case type history fetched")
 
 
-@router.post("/{case_type_identifier}/cases", response_model=dict)
+@router.post("/{case_type_id}/cases", response_model=dict)
 async def create_case_for_case_type(
-    case_type_identifier: str,
+    case_type_id: int,
     payload: CategoryCaseCreateRequest,
     db: AsyncSession = Depends(get_db_session),
 ):
     service = CaseEntryService(CaseEntryRepository(db), CaseTypeRepository(db), FormFieldRepository(db))
-    case = await service.create_case_for_identifier(case_type_identifier, payload)
+    case = await service.create_case_for_identifier(case_type_id, payload)
     return success_response(data=_case_to_payload(case), message="Case created successfully")

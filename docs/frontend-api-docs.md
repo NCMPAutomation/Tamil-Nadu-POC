@@ -48,13 +48,13 @@ Error format:
 | --- | --- |
 | `GET /health` | App startup or connectivity check. |
 | `GET /case-types` | Load the category grid/list screen. |
-| `GET /case-types/{case_type_identifier}/fields` | Open a category form and need the field list. |
-| `GET /forms/{case_type_identifier}` | Open the create form screen for a category. |
+| `GET /case-types/{case_type_id}/fields` | Open a category form and need the field list. |
+| `GET /forms/{case_type_id}` | Open the create form screen for a category. |
 | `POST /cases` | Save a new case if your screen still uses the generic create flow. |
 | `GET /cases/{id}` | Open a case detail page from history or search. |
 | `GET /cases?case_type_id=` | Open a flat list of cases, optionally filtered by category. |
-| `GET /case-types/{case_type_identifier}/history` | Open the category history page. |
-| `POST /case-types/{case_type_identifier}/cases` | Submit a new case directly from a category-specific form. |
+| `GET /case-types/{case_type_id}/history` | Open the category history page. |
+| `POST /case-types/{case_type_id}/cases` | Submit a new case directly from a category-specific form. |
 
 ---
 
@@ -112,12 +112,12 @@ curl --location 'https://dev.arche.global/api/v1/tndp/case-types'
 ---
 
 ## 3) Get Fields By Case Type
-### GET `/case-types/{case_type_identifier}/fields`
-Use this when you already know the category and need its field schema to render a form. Prefer the category `code` in the path, because it is stable and safe for URLs. If your backend version supports it, `case_type_identifier` can also be the numeric id.
+### GET `/case-types/{case_type_id}/fields`
+Use this when you already know the category and need its field schema to render a form. Send the numeric `case_type_id` so the client does not need to normalize names or encode URLs.
 
 #### cURL
 ```bash
-curl --location 'https://dev.arche.global/api/v1/tndp/case-types/MURDER_FOR_GAIN/fields'
+curl --location 'https://dev.arche.global/api/v1/tndp/case-types/1/fields'
 ```
 
 #### Success Response
@@ -153,12 +153,12 @@ curl --location 'https://dev.arche.global/api/v1/tndp/case-types/MURDER_FOR_GAIN
 ---
 
 ## 4) Get Dynamic Form Schema
-### GET `/forms/{case_type_identifier}`
-Use this before rendering the create form screen for a category. Prefer the category `code` in the path; it avoids URL encoding problems and works reliably across clients.
+### GET `/forms/{case_type_id}`
+Use this before rendering the create form screen for a category. Send the numeric `case_type_id` so the frontend can just pass the selected category id through.
 
 #### cURL
 ```bash
-curl --location 'https://dev.arche.global/api/v1/tndp/forms/MURDER_FOR_GAIN'
+curl --location 'https://dev.arche.global/api/v1/tndp/forms/1'
 ```
 
 #### Success Response
@@ -359,12 +359,12 @@ curl --location 'https://dev.arche.global/api/v1/tndp/cases?case_type_id=1'
 ---
 
 ## 8) Category History Page
-### GET `/case-types/{case_type_identifier}/history`
+### GET `/case-types/{case_type_id}/history`
 Use this when the user taps a category and you want to show that category's history screen. Optional query param: `limit` controls how many recent records to return.
 
 #### cURL
 ```bash
-curl --location 'https://dev.arche.global/api/v1/tndp/case-types/MURDER_FOR_GAIN/history?limit=20'
+curl --location 'https://dev.arche.global/api/v1/tndp/case-types/1/history?limit=20'
 ```
 
 #### Success Response
@@ -406,14 +406,14 @@ curl --location 'https://dev.arche.global/api/v1/tndp/case-types/MURDER_FOR_GAIN
         ]
       }
     ],
-    "formEndpoint": "/forms/Murder%20for%20Gain",
-    "submitEndpoint": "/case-types/Murder%20for%20Gain/cases"
+    "formEndpoint": "/forms/1",
+    "submitEndpoint": "/case-types/1/cases"
   },
   "message": "Case type history fetched"
 }
 ```
 
-### POST `/case-types/{case_type_identifier}/cases`
+### POST `/case-types/{case_type_id}/cases`
 Use this from the category-specific form submit button so the payload is created directly under the selected category.
 
 #### Request Body
@@ -435,7 +435,7 @@ Use this from the category-specific form submit button so the payload is created
 
 #### cURL
 ```bash
-curl --location 'https://dev.arche.global/api/v1/tndp/case-types/MURDER_FOR_GAIN/cases' \
+curl --location 'https://dev.arche.global/api/v1/tndp/case-types/1/cases' \
 --header 'Content-Type: application/json' \
 --data '{
   "created_by": "inspector_101",
@@ -459,12 +459,12 @@ Same shape as `POST /cases`, with `caseType` included in the response.
 
 ## Frontend Integration Flow
 1. Call `GET /case-types` and show case type dropdown.
-2. On category click, call `GET /case-types/{case_type_identifier}/history`.
+2. On category click, call `GET /case-types/{case_type_id}/history`.
 3. Show the history list from `records` and keep a small "New Case" button that opens the form.
-4. On button tap, call `GET /forms/{case_type_identifier}`.
+4. On button tap, call `GET /forms/{case_type_id}`.
 5. Render fields by `fieldType` and `orderIndex`.
 6. For `DROPDOWN`, render options from `options`.
-7. Submit to `POST /case-types/{case_type_identifier}/cases` with `data` object keys exactly equal to `fieldName`.
+7. Submit to `POST /case-types/{case_type_id}/cases` with `data` object keys exactly equal to `fieldName`.
 8. Use `GET /cases/{id}` for details page and `GET /cases` for cross-category list view.
 
 ---
@@ -473,8 +473,8 @@ Same shape as `POST /cases`, with `caseType` included in the response.
 - `value` is stored and returned as string in API output.
 - Response payload keys are `camelCase`.
 - Request body and query parameter keys remain `snake_case` (for example: `case_type_id`, `created_by`).
-- `case_type_id` can be the numeric id or the category title/code when creating a case.
-- For the mobile category page, prefer `GET /case-types/{case_type_identifier}/history` plus `POST /case-types/{case_type_identifier}/cases`.
+- `case_type_id` should be the numeric id in path-based APIs.
+- For the mobile category page, prefer `GET /case-types/{case_type_id}/history` plus `POST /case-types/{case_type_id}/cases`.
 - Do not send unknown keys in `data`.
 - Required validation should be done in UI, but backend also enforces it.
 - `created_by` is currently a free text field in request (can be mapped to logged-in user later).

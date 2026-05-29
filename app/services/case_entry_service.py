@@ -79,10 +79,10 @@ class CaseEntryService:
 
     async def create_case_for_identifier(
         self,
-        case_type_identifier: int | str,
+        case_type_id: int,
         payload: CategoryCaseCreateRequest,
     ) -> CaseEntry:
-        case_type = await self.case_type_repo.get_by_identifier(case_type_identifier)
+        case_type = await self.case_type_repo.get_by_id(case_type_id)
         return await self._build_case_entry(case_type, payload)
 
     async def get_case(self, case_id: int) -> CaseEntry:

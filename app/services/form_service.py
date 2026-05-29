@@ -10,8 +10,8 @@ class FormService:
         self.case_type_repo = case_type_repo
         self.field_repo = field_repo
 
-    async def get_form_schema(self, case_type_identifier: int | str) -> dict:
-        case_type = await self.case_type_repo.get_by_identifier(case_type_identifier)
+    async def get_form_schema(self, case_type_id: int) -> dict:
+        case_type = await self.case_type_repo.get_by_id(case_type_id)
         if not case_type:
             raise NotFoundException("Case type not found")
 
