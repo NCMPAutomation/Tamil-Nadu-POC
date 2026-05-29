@@ -1,10 +1,10 @@
-﻿from app.core.exceptions import BadRequestException, NotFoundException
+from app.core.exceptions import BadRequestException, NotFoundException
 from app.models.case_entry import CaseEntry
 from app.models.case_field_value import CaseFieldValue
 from app.repositories.case_entry_repo import CaseEntryRepository
 from app.repositories.case_type_repo import CaseTypeRepository
 from app.repositories.form_field_repo import FormFieldRepository
-from app.schemas.case_entry import DynamicCaseCreateRequest
+from app.schemas.case_entry import CategoryCaseCreateRequest, DynamicCaseCreateRequest
 
 
 class CaseEntryService:
@@ -18,12 +18,11 @@ class CaseEntryService:
         self.case_type_repo = case_type_repo
         self.form_field_repo = form_field_repo
 
-    async def create_case(self, payload: DynamicCaseCreateRequest) -> CaseEntry:
-        case_type = await self.case_type_repo.get_by_id(payload.case_type_id)
+    async def _build_case_entry(self, case_type, payload: CategoryCaseCreateRequest | DynamicCaseCreateRequest) -> CaseEntry:
         if not case_type or not case_type.is_active:
             raise NotFoundException("Invalid case type")
 
-        fields = await self.form_field_repo.get_by_case_type_id(payload.case_type_id)
+        fields = await self.form_field_repo.get_by_case_type_id(case_type.id)
         fields_by_name = {field.field_name: field for field in fields}
 
         unknown_keys = [key for key in payload.data.keys() if key not in fields_by_name]
@@ -39,7 +38,7 @@ class CaseEntryService:
             raise BadRequestException(f"Missing required fields: {', '.join(missing_required)}")
 
         case_entry = CaseEntry(
-            case_type_id=payload.case_type_id,
+            case_type_id=case_type.id,
             created_by=payload.created_by,
             status=payload.status,
         )
@@ -74,6 +73,18 @@ class CaseEntryService:
 
         return await self.get_case(case_entry.id)
 
+    async def create_case(self, payload: DynamicCaseCreateRequest) -> CaseEntry:
+        case_type = await self.case_type_repo.get_by_identifier(payload.case_type_id)
+        return await self._build_case_entry(case_type, payload)
+
+    async def create_case_for_identifier(
+        self,
+        case_type_identifier: int | str,
+        payload: CategoryCaseCreateRequest,
+    ) -> CaseEntry:
+        case_type = await self.case_type_repo.get_by_identifier(case_type_identifier)
+        return await self._build_case_entry(case_type, payload)
+
     async def get_case(self, case_id: int) -> CaseEntry:
         case = await self.case_entry_repo.get_case_by_id(case_id)
         if not case:
@@ -82,3 +93,25 @@ class CaseEntryService:
 
     async def list_cases(self, case_type_id: int | None = None) -> list[CaseEntry]:
         return await self.case_entry_repo.list_cases(case_type_id)
+
+    async def get_category_history(self, case_type_identifier: int | str, limit: int = 20) -> dict:
+        case_type = await self.case_type_repo.get_by_identifier(case_type_identifier)
+        if not case_type:
+            raise NotFoundException("Case type not found")
+
+        records = await self.case_entry_repo.list_cases_by_case_type_id(case_type.id, limit=limit)
+        total_records = await self.case_entry_repo.count_cases_by_case_type_id(case_type.id)
+        status_counts = await self.case_entry_repo.count_cases_by_status(case_type.id)
+
+        return {
+            "case_type": case_type,
+            "summary": {
+                "total_records": total_records,
+                "draft_count": status_counts.get("DRAFT", 0),
+                "submitted_count": status_counts.get("SUBMITTED", 0),
+                "approved_count": status_counts.get("APPROVED", 0),
+                "rejected_count": status_counts.get("REJECTED", 0),
+                "latest_created_at": records[0].created_at if records else None,
+            },
+            "records": records,
+        }

@@ -16,6 +16,17 @@ def _case_to_payload(case):
     return {
         "id": case.id,
         "case_type_id": case.case_type_id,
+        "case_type": {
+            "id": case.case_type.id,
+            "name": case.case_type.name,
+            "code": case.case_type.code,
+            "icon": case.case_type.icon,
+            "color": case.case_type.color,
+            "is_active": case.case_type.is_active,
+            "created_at": case.case_type.created_at,
+        }
+        if case.case_type
+        else None,
         "status": case.status,
         "created_by": case.created_by,
         "created_at": case.created_at,

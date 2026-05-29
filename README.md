@@ -34,6 +34,12 @@ mysql -u Arche_emp_db -h 20.40.46.223 -p < sql/seed_case_types.sql
 mysql -u Arche_emp_db -h 20.40.46.223 -p < sql/seed_gcr_case_types.sql
 ```
 
+## Seed Frontend Report Categories + Sample History
+
+```bash
+mysql -u Arche_emp_db -h 20.40.46.223 -p < sql/seed_report_categories.sql
+```
+
 ## Migrations (Alternative to raw DDL)
 
 ```bash
@@ -43,8 +49,10 @@ alembic upgrade head
 ## API
 
 - `GET /case-types`
-- `GET /case-types/{id}/fields`
-- `GET /forms/{case_type_id}`
+- `GET /case-types/{case_type_identifier}/fields`
+- `GET /forms/{case_type_identifier}`
+- `GET /case-types/{case_type_identifier}/history`
+- `POST /case-types/{case_type_identifier}/cases`
 - `POST /cases`
 - `GET /cases/{id}`
 - `GET /cases?case_type_id=`

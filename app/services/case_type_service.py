@@ -1,4 +1,4 @@
-﻿from app.core.exceptions import NotFoundException
+from app.core.exceptions import NotFoundException
 from app.repositories.case_type_repo import CaseTypeRepository
 
 
@@ -11,6 +11,12 @@ class CaseTypeService:
 
     async def get_case_type(self, case_type_id: int):
         case_type = await self.repo.get_by_id(case_type_id)
+        if not case_type:
+            raise NotFoundException("Case type not found")
+        return case_type
+
+    async def get_case_type_by_identifier(self, identifier: int | str):
+        case_type = await self.repo.get_by_identifier(identifier)
         if not case_type:
             raise NotFoundException("Case type not found")
         return case_type

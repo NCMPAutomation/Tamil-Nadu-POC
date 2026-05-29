@@ -4,12 +4,19 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from app.enums.case_status import CaseStatus
+from app.schemas.case_type import CaseTypeOut
 from app.schemas.common import ORMModel
 from app.schemas.form_field import FormFieldOut
 
 
 class DynamicCaseCreateRequest(BaseModel):
-    case_type_id: int
+    case_type_id: int | str
+    created_by: str
+    status: CaseStatus = CaseStatus.DRAFT
+    data: dict[str, Any] = Field(default_factory=dict)
+
+
+class CategoryCaseCreateRequest(BaseModel):
     created_by: str
     status: CaseStatus = CaseStatus.DRAFT
     data: dict[str, Any] = Field(default_factory=dict)
@@ -32,5 +39,22 @@ class CaseEntryOut(ORMModel):
 
 
 class FormSchemaOut(BaseModel):
-    case_type: dict
+    case_type: CaseTypeOut
     fields: list[FormFieldOut]
+
+
+class CaseHistorySummaryOut(BaseModel):
+    total_records: int
+    draft_count: int = 0
+    submitted_count: int = 0
+    approved_count: int = 0
+    rejected_count: int = 0
+    latest_created_at: datetime | None = None
+
+
+class CaseHistoryResponseOut(BaseModel):
+    case_type: CaseTypeOut
+    summary: CaseHistorySummaryOut
+    records: list[CaseEntryOut]
+    form_endpoint: str
+    submit_endpoint: str
