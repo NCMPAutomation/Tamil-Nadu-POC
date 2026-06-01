@@ -54,6 +54,7 @@ Error format:
 | `GET /cases/{id}` | Open a case detail page from history or search. |
 | `GET /cases?case_type_id=` | Open a flat list of cases, optionally filtered by category. |
 | `GET /case-types/{case_type_id}/history` | Open the category history page. |
+| `GET /case-types/{case_type_id}/history/csv` | Download the full history for that category as CSV. |
 | `POST /case-types/{case_type_id}/cases` | Submit a new case directly from a category-specific form. |
 
 ---
@@ -429,17 +430,31 @@ curl --location 'https://dev.arche.global/api/v1/tndp/case-types/1/cases' \
 #### Success Response
 Same shape as `POST /cases`, with `caseType` included in the response.
 
+### GET `/case-types/{case_type_id}/history/csv`
+Use this when the user taps the “Download history” button on the category screen and you want a CSV file with all records for that category.
+
+#### cURL
+```bash
+curl --location --output murder_history.csv 'https://dev.arche.global/api/v1/tndp/case-types/1/history/csv'
+```
+
+#### Response
+- `Content-Type: text/csv`
+- `Content-Disposition: attachment; filename="murder_history.csv"`
+- Each row contains the case metadata plus one column per field in the selected category.
+
 ---
 
 ## Frontend Integration Flow
 1. Call `GET /case-types` and show case type dropdown.
 2. On category click, call `GET /case-types/{case_type_id}/history`.
 3. Show the history list from `records` and keep a small "New Case" button that opens the form.
-4. On button tap, call `GET /forms/{case_type_id}`.
-5. Render fields by `fieldType` and `orderIndex`.
-6. For `DROPDOWN`, render options from `options`.
-7. Submit to `POST /cases` with `case_type_id`, `created_by`, and `data` only.
-8. Use `GET /cases/{id}` for details page and `GET /cases` for cross-category list view.
+4. Add a "Download history" button that calls `GET /case-types/{case_type_id}/history/csv`.
+5. On button tap, call `GET /forms/{case_type_id}`.
+6. Render fields by `fieldType` and `orderIndex`.
+7. For `DROPDOWN`, render options from `options`.
+8. Submit to `POST /cases` with `case_type_id`, `created_by`, and `data` only.
+9. Use `GET /cases/{id}` for details page and `GET /cases` for cross-category list view.
 
 ---
 

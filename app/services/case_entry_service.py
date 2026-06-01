@@ -115,3 +115,42 @@ class CaseEntryService:
             },
             "records": records,
         }
+
+    async def export_category_history_rows(self, case_type_id: int) -> dict:
+        case_type = await self.case_type_repo.get_by_id(case_type_id)
+        if not case_type or not case_type.is_active:
+            raise NotFoundException("Case type not found")
+
+        fields = await self.form_field_repo.get_by_case_type_id(case_type.id)
+        records = await self.case_entry_repo.list_cases_by_case_type_id(case_type.id)
+
+        columns = [
+            ("id", "Case ID"),
+            ("status", "Status"),
+            ("created_by", "Created By"),
+            ("created_at", "Created At"),
+        ]
+        columns.extend((field.field_name, field.label) for field in fields)
+
+        rows: list[dict[str, str]] = []
+        for case in records:
+            row = {
+                "id": str(case.id),
+                "status": case.status.value if hasattr(case.status, "value") else str(case.status),
+                "created_by": case.created_by,
+                "created_at": case.created_at.isoformat(sep=" ", timespec="seconds") if case.created_at else "",
+            }
+            values_by_field_name = {
+                item.field.field_name: item.value
+                for item in case.field_values
+                if item.field is not None
+            }
+            for field in fields:
+                row[field.field_name] = values_by_field_name.get(field.field_name, "")
+            rows.append(row)
+
+        return {
+            "case_type": case_type,
+            "columns": columns,
+            "rows": rows,
+        }

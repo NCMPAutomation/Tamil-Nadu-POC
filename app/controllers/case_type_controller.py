@@ -1,4 +1,8 @@
+import csv
+from io import StringIO
+
 from fastapi import APIRouter, Depends, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db_session
@@ -80,6 +84,29 @@ async def get_case_type_history(
         submit_endpoint=f"/case-types/{case_type_id}/cases",
     )
     return success_response(data=response.model_dump(), message="Case type history fetched")
+
+
+@router.get("/{case_type_id}/history/csv")
+async def download_case_type_history_csv(
+    case_type_id: int,
+    db: AsyncSession = Depends(get_db_session),
+):
+    service = CaseEntryService(CaseEntryRepository(db), CaseTypeRepository(db), FormFieldRepository(db))
+    export_data = await service.export_category_history_rows(case_type_id)
+
+    buffer = StringIO()
+    writer = csv.DictWriter(buffer, fieldnames=[key for key, _ in export_data["columns"]], extrasaction="ignore")
+    writer.writerow({key: label for key, label in export_data["columns"]})
+    for row in export_data["rows"]:
+        writer.writerow(row)
+
+    filename = f"{export_data['case_type'].code.lower()}_history.csv"
+    buffer.seek(0)
+    return StreamingResponse(
+        iter([buffer.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @router.post("/{case_type_id}/cases", response_model=dict)
