@@ -195,14 +195,13 @@ curl --location 'https://dev.arche.global/api/v1/tndp/forms/1'
 
 ## 5) Create Case Entry
 ### POST `/cases`
-Use this if the frontend still submits through the generic case flow rather than the category-specific submit button.
+Use this as the standard case-submit endpoint when the frontend already has the selected category id and form data.
 
 #### Request Body
 ```json
 {
   "case_type_id": 1,
   "created_by": "inspector_101",
-  "status": "DRAFT",
   "data": {
     "sl_no": 1,
     "ps_cr_no_section_of_law": "Tambaram PS Cr.No 123/2026 u/s 302 IPC",
@@ -224,7 +223,6 @@ curl --location 'https://dev.arche.global/api/v1/tndp/cases' \
 --data '{
   "case_type_id": 1,
   "created_by": "inspector_101",
-  "status": "DRAFT",
   "data": {
     "sl_no": 1,
     "ps_cr_no_section_of_law": "Tambaram PS Cr.No 123/2026 u/s 302 IPC",
@@ -440,7 +438,7 @@ Same shape as `POST /cases`, with `caseType` included in the response.
 4. On button tap, call `GET /forms/{case_type_id}`.
 5. Render fields by `fieldType` and `orderIndex`.
 6. For `DROPDOWN`, render options from `options`.
-7. Submit to `POST /case-types/{case_type_id}/cases` with `data` object keys exactly equal to `fieldName`.
+7. Submit to `POST /cases` with `case_type_id`, `created_by`, and `data` only.
 8. Use `GET /cases/{id}` for details page and `GET /cases` for cross-category list view.
 
 ---
@@ -449,8 +447,9 @@ Same shape as `POST /cases`, with `caseType` included in the response.
 - `value` is stored and returned as string in API output.
 - Response payload keys are `camelCase`.
 - Request body and query parameter keys remain `snake_case` (for example: `case_type_id`, `created_by`).
-- `case_type_id` should be the numeric id in path-based APIs.
+- `case_type_id` should be the numeric id everywhere.
 - For the mobile category page, prefer `GET /case-types/{case_type_id}/history` plus `POST /case-types/{case_type_id}/cases`.
+- For the simplest create flow, use `POST /cases` with the selected category id and form data.
 - Do not send unknown keys in `data`.
 - Required validation should be done in UI, but backend also enforces it.
 - `created_by` is currently a free text field in request (can be mapped to logged-in user later).

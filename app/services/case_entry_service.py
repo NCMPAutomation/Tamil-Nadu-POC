@@ -74,7 +74,7 @@ class CaseEntryService:
         return await self.get_case(case_entry.id)
 
     async def create_case(self, payload: DynamicCaseCreateRequest) -> CaseEntry:
-        case_type = await self.case_type_repo.get_by_identifier(payload.case_type_id)
+        case_type = await self.case_type_repo.get_by_id(payload.case_type_id)
         return await self._build_case_entry(case_type, payload)
 
     async def create_case_for_identifier(
