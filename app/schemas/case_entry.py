@@ -4,6 +4,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from app.enums.case_status import CaseStatus
+from app.schemas.case_type import CaseTypeOut
 from app.schemas.common import ORMModel
 from app.schemas.form_field import FormFieldOut
 
