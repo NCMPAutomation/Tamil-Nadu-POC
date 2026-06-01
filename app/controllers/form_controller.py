@@ -17,9 +17,6 @@ async def get_form(case_type_id: int, db: AsyncSession = Depends(get_db_session)
     form = await service.get_form_schema(case_type_id)
 
     return success_response(
-        data={
-            "case_type": form["case_type"],
-            "fields": [FormFieldOut.model_validate(field).model_dump() for field in form["fields"]],
-        },
+        data={"fields": [FormFieldOut.model_validate(field).model_dump() for field in form["fields"]]},
         message="Form schema fetched",
     )

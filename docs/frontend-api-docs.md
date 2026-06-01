@@ -166,13 +166,6 @@ curl --location 'https://dev.arche.global/api/v1/tndp/forms/1'
 {
   "success": true,
   "data": {
-    "caseType": {
-      "id": 1,
-      "name": "Murder for Gain",
-      "code": "MURDER_FOR_GAIN",
-      "icon": "dollarsign.circle.fill",
-      "color": "orange"
-    },
     "fields": [
       {
         "id": 100,
