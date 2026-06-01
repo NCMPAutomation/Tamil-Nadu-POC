@@ -12,7 +12,7 @@ from app.schemas.form_field import FormFieldOut
 class DynamicCaseCreateRequest(BaseModel):
     case_type_id: int
     created_by: str
-    status: CaseStatus = CaseStatus.DRAFT
+    status: CaseStatus = CaseStatus.SUBMITTED
     data: dict[str, Any] = Field(default_factory=dict)
 
 

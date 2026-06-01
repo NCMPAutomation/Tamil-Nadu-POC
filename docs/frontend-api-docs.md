@@ -197,6 +197,7 @@ curl --location 'https://dev.arche.global/api/v1/tndp/forms/1'
 ## 5) Create Case Entry
 ### POST `/cases`
 Use this as the standard case-submit endpoint when the frontend already has the selected category id and form data.
+Default status: `SUBMITTED`.
 
 #### Request Body
 ```json
