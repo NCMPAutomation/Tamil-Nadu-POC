@@ -4,7 +4,6 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from app.enums.case_status import CaseStatus
-from app.schemas.case_type import CaseTypeOut
 from app.schemas.common import ORMModel
 from app.schemas.form_field import FormFieldOut
 
@@ -43,18 +42,7 @@ class FormSchemaOut(BaseModel):
     fields: list[FormFieldOut]
 
 
-class CaseHistorySummaryOut(BaseModel):
-    total_records: int
-    draft_count: int = 0
-    submitted_count: int = 0
-    approved_count: int = 0
-    rejected_count: int = 0
-    latest_created_at: datetime | None = None
-
-
 class CaseHistoryResponseOut(BaseModel):
-    case_type: CaseTypeOut
-    summary: CaseHistorySummaryOut
     records: list[CaseEntryOut]
     form_endpoint: str
     submit_endpoint: str

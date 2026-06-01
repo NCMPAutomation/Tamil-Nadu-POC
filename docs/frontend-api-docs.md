@@ -372,23 +372,6 @@ curl --location 'https://dev.arche.global/api/v1/tndp/case-types/1/history?limit
 {
   "success": true,
   "data": {
-    "caseType": {
-      "id": 1,
-      "name": "Murder for Gain",
-      "code": "MURDER_FOR_GAIN",
-      "icon": "dollarsign.circle.fill",
-      "color": "orange",
-      "isActive": true,
-      "createdAt": "2026-04-29T10:00:00"
-    },
-    "summary": {
-      "totalRecords": 12,
-      "draftCount": 4,
-      "submittedCount": 6,
-      "approvedCount": 1,
-      "rejectedCount": 1,
-      "latestCreatedAt": "2026-04-29T12:15:00"
-    },
     "records": [
       {
         "id": 55,

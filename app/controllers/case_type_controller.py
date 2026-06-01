@@ -75,8 +75,6 @@ async def get_case_type_history(
     service = CaseEntryService(CaseEntryRepository(db), CaseTypeRepository(db), FormFieldRepository(db))
     history = await service.get_category_history(case_type_id, limit=limit)
     response = CaseHistoryResponseOut(
-        case_type=history["case_type"],
-        summary=history["summary"],
         records=[_case_to_payload(case) for case in history["records"]],
         form_endpoint=f"/forms/{case_type_id}",
         submit_endpoint=f"/case-types/{case_type_id}/cases",
