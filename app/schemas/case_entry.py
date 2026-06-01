@@ -18,7 +18,7 @@ class DynamicCaseCreateRequest(BaseModel):
 
 class CategoryCaseCreateRequest(BaseModel):
     created_by: str
-    status: CaseStatus = CaseStatus.DRAFT
+    status: CaseStatus = CaseStatus.SUBMITTED
     data: dict[str, Any] = Field(default_factory=dict)
 
 

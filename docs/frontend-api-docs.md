@@ -27,7 +27,6 @@ Error format:
 ## Enums
 
 ### Case Status
-- `DRAFT`
 - `SUBMITTED`
 - `APPROVED`
 - `REJECTED`
@@ -255,7 +254,7 @@ curl --location 'https://dev.arche.global/api/v1/tndp/cases' \
       "isActive": true,
       "createdAt": "2026-04-29T10:00:00"
     },
-    "status": "DRAFT",
+    "status": "SUBMITTED",
     "createdBy": "inspector_101",
     "createdAt": "2026-04-29T12:15:00",
     "values": [
@@ -317,7 +316,7 @@ curl --location 'https://dev.arche.global/api/v1/tndp/cases/55'
       "isActive": true,
       "createdAt": "2026-04-29T10:00:00"
     },
-    "status": "DRAFT",
+    "status": "SUBMITTED",
     "createdBy": "inspector_101",
     "createdAt": "2026-04-29T12:15:00",
     "values": [
@@ -369,7 +368,7 @@ curl --location 'https://dev.arche.global/api/v1/tndp/case-types/1/history?limit
       {
         "id": 55,
         "caseTypeId": 1,
-        "status": "DRAFT",
+        "status": "SUBMITTED",
         "createdBy": "inspector_101",
         "createdAt": "2026-04-29T12:15:00",
         "values": [
@@ -396,7 +395,7 @@ Use this from the category-specific form submit button so the payload is created
 ```json
 {
   "created_by": "inspector_101",
-  "status": "DRAFT",
+  "status": "SUBMITTED",
   "data": {
     "sl_no": 1,
     "ps_cr_no_section_of_law": "Tambaram PS Cr.No 123/2026 u/s 302 IPC",
@@ -415,7 +414,7 @@ curl --location 'https://dev.arche.global/api/v1/tndp/case-types/1/cases' \
 --header 'Content-Type: application/json' \
 --data '{
   "created_by": "inspector_101",
-  "status": "DRAFT",
+  "status": "SUBMITTED",
   "data": {
     "sl_no": 1,
     "ps_cr_no_section_of_law": "Tambaram PS Cr.No 123/2026 u/s 302 IPC",

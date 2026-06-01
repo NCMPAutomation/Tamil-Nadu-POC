@@ -13,7 +13,7 @@ class CaseEntry(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     case_type_id: Mapped[int] = mapped_column(ForeignKey("case_types.id"), nullable=False, index=True)
-    status: Mapped[CaseStatus] = mapped_column(SQLEnum(CaseStatus), nullable=False, default=CaseStatus.DRAFT)
+    status: Mapped[CaseStatus] = mapped_column(SQLEnum(CaseStatus), nullable=False, default=CaseStatus.SUBMITTED)
     created_by: Mapped[str] = mapped_column(String(100), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 

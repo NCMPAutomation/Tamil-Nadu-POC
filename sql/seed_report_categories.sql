@@ -340,7 +340,7 @@ WHERE ct.code IN (
 
 -- Personal offences group
 INSERT INTO case_entries (case_type_id, status, created_by, created_at)
-SELECT ct.id, 'DRAFT', 'seed_report_categories_history', '2026-05-29 10:03:00'
+SELECT ct.id, 'SUBMITTED', 'seed_report_categories_history', '2026-05-29 10:03:00'
 FROM case_types ct
 WHERE ct.code IN (
   'ATTEMPT_TO_MURDER',
@@ -423,7 +423,7 @@ WHERE ct.code IN (
 
 -- Section 194 cases
 INSERT INTO case_entries (case_type_id, status, created_by, created_at)
-SELECT ct.id, 'DRAFT', 'seed_report_categories_history', '2026-05-29 10:05:00'
+SELECT ct.id, 'SUBMITTED', 'seed_report_categories_history', '2026-05-29 10:05:00'
 FROM case_types ct
 WHERE ct.code IN (
   'S194_CRPC_DEATH_WITHIN_7_YEARS_OF_MARRIAGE',

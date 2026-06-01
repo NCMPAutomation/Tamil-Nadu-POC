@@ -100,19 +100,9 @@ class CaseEntryService:
             raise NotFoundException("Case type not found")
 
         records = await self.case_entry_repo.list_cases_by_case_type_id(case_type.id, limit=limit)
-        total_records = await self.case_entry_repo.count_cases_by_case_type_id(case_type.id)
-        status_counts = await self.case_entry_repo.count_cases_by_status(case_type.id)
 
         return {
             "case_type": case_type,
-            "summary": {
-                "total_records": total_records,
-                "draft_count": status_counts.get("DRAFT", 0),
-                "submitted_count": status_counts.get("SUBMITTED", 0),
-                "approved_count": status_counts.get("APPROVED", 0),
-                "rejected_count": status_counts.get("REJECTED", 0),
-                "latest_created_at": records[0].created_at if records else None,
-            },
             "records": records,
         }
 

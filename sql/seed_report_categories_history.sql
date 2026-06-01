@@ -17,11 +17,11 @@ SELECT
   ct.id,
   CASE seq.n
     WHEN 1 THEN 'SUBMITTED'
-    WHEN 2 THEN 'DRAFT'
+    WHEN 2 THEN 'SUBMITTED'
     WHEN 3 THEN 'APPROVED'
     WHEN 4 THEN 'REJECTED'
     WHEN 5 THEN 'SUBMITTED'
-    ELSE 'DRAFT'
+    ELSE 'SUBMITTED'
   END AS status,
   'seed_report_categories_history' AS created_by,
   DATE_ADD('2026-05-29 10:00:00', INTERVAL ((ct.id - 1) * 6 + seq.n) MINUTE) AS created_at
@@ -85,4 +85,3 @@ FROM case_entries ce
 INNER JOIN case_types ct ON ct.id = ce.case_type_id
 INNER JOIN form_fields ff ON ff.case_type_id = ct.id
 WHERE ce.created_by = 'seed_report_categories_history';
-

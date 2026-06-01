@@ -18,7 +18,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 field_type_enum = sa.Enum("TEXT", "NUMBER", "DATE", "PHONE", "TEXTAREA", "DROPDOWN", name="fieldtype")
-case_status_enum = sa.Enum("DRAFT", "SUBMITTED", "APPROVED", "REJECTED", name="casestatus")
+case_status_enum = sa.Enum("SUBMITTED", "APPROVED", "REJECTED", name="casestatus")
 
 
 def upgrade() -> None:
@@ -51,7 +51,7 @@ def upgrade() -> None:
         "case_entries",
         sa.Column("id", sa.Integer(), primary_key=True),
         sa.Column("case_type_id", sa.Integer(), sa.ForeignKey("case_types.id"), nullable=False),
-        sa.Column("status", case_status_enum, nullable=False, server_default="DRAFT"),
+        sa.Column("status", case_status_enum, nullable=False, server_default="SUBMITTED"),
         sa.Column("created_by", sa.String(length=100), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=False, server_default=sa.text("CURRENT_TIMESTAMP")),
     )
